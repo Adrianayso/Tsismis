@@ -14,8 +14,6 @@
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; overflow-x: hidden; }
-
-    /* SIDEBAR */
     #sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 100; transform: translateX(0); transition: transform 0.3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
     #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
     .sidebar-header { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
@@ -32,24 +30,16 @@
     .live-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; }
     .live-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)} }
-
-    /* TOGGLE */
     #toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 200; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; color: var(--text); }
     #toggle-btn:hover { background: var(--surface2); border-color: var(--gold); color: var(--gold); }
     #toggle-btn.sidebar-open { left: calc(var(--sidebar-width) + 16px); }
-
-    /* MAIN */
     #main { flex: 1; margin-left: var(--sidebar-width); transition: margin-left 0.3s cubic-bezier(.4,0,.2,1); min-height: 100vh; }
     #main.expanded { margin-left: 0; }
     .page { display: none; } .page.active { display: block; }
-
-    /* TOPBAR */
     .topbar { padding: 80px 40px 0; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
     .page-title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
     .page-title span { background: linear-gradient(135deg, var(--gold), #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .date-tag { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); padding: 6px 12px; background: var(--surface); border-radius: 20px; border: 1px solid var(--border); }
-
-    /* SEARCH */
     .search-wrap { padding: 20px 40px 0; }
     .search-box { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; transition: border-color 0.2s; }
     .search-box:focus-within { border-color: var(--gold); }
@@ -58,14 +48,10 @@
     .search-box input::placeholder { color: var(--muted); }
     #search-clear { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; display: none; padding: 0; }
     #search-clear.visible { display: block; }
-
-    /* CATEGORIES */
     .categories { display: flex; gap: 8px; padding: 16px 40px 0; flex-wrap: wrap; }
     .cat-btn { padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
     .cat-btn:hover { color: var(--text); border-color: #444; }
     .cat-btn.active { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 600; }
-
-    /* NEWS GRID */
     #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 24px 40px 20px; }
     .card { background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; }
     .card:hover { transform: translateY(-4px); border-color: rgba(255,215,0,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
@@ -79,20 +65,14 @@
     .card-time { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
     .card-arrow { width: 28px; height: 28px; background: var(--surface2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.2s; }
     .card:hover .card-arrow { background: var(--gold); color: #000; }
-
-    /* PAGINATION */
     .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 20px 40px 40px; flex-wrap: wrap; }
     .page-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-family: 'Space Mono', monospace; font-size: 13px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
     .page-btn:hover { border-color: var(--gold); color: var(--gold); }
     .page-btn.active { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 700; }
     .page-btn.arrow { font-size: 16px; }
-
-    /* LOADING */
     #loading-msg { text-align: center; padding: 80px 40px; color: var(--muted); font-family: 'Space Mono', monospace; }
     .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ARTICLE */
     .article-hero { width: 100%; height: 340px; object-fit: cover; display: block; }
     .article-hero-placeholder { width: 100%; height: 340px; background: linear-gradient(135deg, #1a1a1a, #222); display: flex; align-items: center; justify-content: center; font-size: 80px; }
     .article-content { padding: 40px 40px 60px; max-width: 760px; }
@@ -114,8 +94,6 @@
     .summary-loading.visible { display: flex; }
     .article-link { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; border: 1px solid var(--border); border-radius: 12px; color: var(--text); text-decoration: none; font-weight: 500; font-size: 15px; transition: all 0.2s; }
     .article-link:hover { border-color: var(--gold); color: var(--gold); }
-
-    /* ABOUT */
     .about-wrap { max-width: 720px; padding: 80px 40px 60px; }
     .about-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); border-radius: 20px; font-size: 12px; color: var(--gold); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 28px; }
     .about-title { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 24px; }
@@ -134,14 +112,10 @@
     .creator-label { font-size: 11px; font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
     .creator-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
     .creator-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
-
-    /* OVERLAY */
-    #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; }
-
-    /* EMPTY STATE */
+    #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; display: none; }
+    #overlay.visible { display: block; }
     .empty-state { text-align: center; padding: 60px 40px; color: var(--muted); }
     .empty-state div:first-child { font-size: 48px; margin-bottom: 16px; }
-
     @media (max-width: 768px) {
       #main { margin-left: 0 !important; }
       #toggle-btn { left: 16px !important; }
@@ -151,8 +125,6 @@
       #news-grid { grid-template-columns: 1fr; }
       .article-title { font-size: 24px; }
       .about-title { font-size: 32px; }
-      #overlay { display: block; pointer-events: none; }
-      #overlay.visible { pointer-events: auto; }
     }
   </style>
 </head>
@@ -239,8 +211,6 @@
 <div id="overlay" onclick="toggleSidebar()"></div>
 
 <main id="main">
-
-  <!-- HOME PAGE -->
   <div id="page-home" class="page active">
     <div class="topbar">
       <div>
@@ -249,7 +219,6 @@
       </div>
       <div class="date-tag" id="date-tag"></div>
     </div>
-
     <div class="search-wrap">
       <div class="search-box">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -259,7 +228,6 @@
         <button id="search-clear" onclick="clearSearch()">✕</button>
       </div>
     </div>
-
     <div class="categories">
       <button class="cat-btn active" onclick="filterCat(this,'all')">📈 Lahat</button>
       <button class="cat-btn" onclick="filterCat(this,'latest')">🕐 Latest</button>
@@ -271,69 +239,44 @@
       <button class="cat-btn" onclick="filterCat(this,'celebs')">⭐ Celebs</button>
       <button class="cat-btn" onclick="filterCat(this,'random')">🎲 Random</button>
     </div>
-
     <div id="loading-msg"><div class="spinner"></div>Hintay muna, naglo-load ang news...</div>
     <div id="news-grid"></div>
     <div class="pagination" id="pagination"></div>
   </div>
 
-  <!-- ARTICLE PAGE -->
   <div id="page-article" class="page"></div>
 
-  <!-- ABOUT PAGE -->
   <div id="page-about" class="page">
     <div class="about-wrap">
       <div class="about-badge">🇵🇭 Made in the Philippines</div>
       <div class="about-title">Balita na <em>gets mo</em> talaga.</div>
       <p class="about-body">
-       <strong>Tsismis</strong> gets the latest Philippine news from trusted local sources 
-        and uses AI to break it down in simple Taglish — so you actually understand 
+        <strong>Tsismis</strong> gets the latest Philippine news from trusted local sources
+        and uses AI to break it down in simple Taglish — so you actually understand
         what's happening in your own country without feeling overwhelmed.
       </p>
       <p class="about-body">
-        Kasi let's be  <strong>real</strong> — a lot of Filipino news is either too formal, too biased, 
-        or just straight up mahirap intindihin. Tsismis fixes that. Every article comes 
-        with an AI summary that explains the story — casual, 
-        clear, and actually helpful
+        Kasi let's be <strong>real</strong> — a lot of Filipino news is either too formal, too biased,
+        or just straight up mahirap intindihin. Tsismis fixes that. Every article comes
+        with an AI summary that explains the story — casual,
+        clear, and actually helpful.
       </p>
       <p class="about-body">
-        Hindi ko pinapalitan ang tunay na journalism. 
-        Ginagawa ito upang mas maipadali para sa mga mamayang pilipino na mag-alala sa kung ano ang 
-         <strong>nangyayari sa ating bansa.</strong>
+        Hindi ko pinapalitan ang tunay na journalism.
+        Ginagawa ito upang mas maipadali para sa mga mamayang pilipino na mag-alala sa kung ano ang
+        <strong>nangyayari sa ating bansa.</strong>
       </p>
-
       <hr class="about-divider"/>
-
       <div class="about-section-title">Saan galing ang news? 📰</div>
       <div class="sources-grid">
-        <div class="source-card">
-          <div class="source-name">Rappler</div>
-          <div class="source-desc">Investigative at breaking news</div>
-        </div>
-        <div class="source-card">
-          <div class="source-name">Inquirer</div>
-          <div class="source-desc">General news, sports, business, tech</div>
-        </div>
-        <div class="source-card">
-          <div class="source-name">PhilStar</div>
-          <div class="source-desc">Headlines, entertainment, sports</div>
-        </div>
-        <div class="source-card">
-          <div class="source-name">GMA News</div>
-          <div class="source-desc">Breaking news at entertainment</div>
-        </div>
-        <div class="source-card">
-          <div class="source-name">Manila Bulletin</div>
-          <div class="source-desc">National at regional news</div>
-        </div>
-        <div class="source-card">
-          <div class="source-name">BusinessWorld</div>
-          <div class="source-desc">Business at economy</div>
-        </div>
+        <div class="source-card"><div class="source-name">Rappler</div><div class="source-desc">Investigative at breaking news</div></div>
+        <div class="source-card"><div class="source-name">Inquirer</div><div class="source-desc">General news, sports, business, tech</div></div>
+        <div class="source-card"><div class="source-name">PhilStar</div><div class="source-desc">Headlines, entertainment, sports</div></div>
+        <div class="source-card"><div class="source-name">GMA News</div><div class="source-desc">Breaking news at entertainment</div></div>
+        <div class="source-card"><div class="source-name">Manila Bulletin</div><div class="source-desc">National at regional news</div></div>
+        <div class="source-card"><div class="source-name">BusinessWorld</div><div class="source-desc">Business at economy</div></div>
       </div>
-
       <hr class="about-divider"/>
-
       <div class="about-section-title">Tech stack 🛠️</div>
       <div class="about-stack">
         <div class="stack-pill">HTML / CSS / JS</div>
@@ -343,7 +286,6 @@
         <div class="stack-pill">Render (Backend)</div>
         <div class="stack-pill">Vercel (Frontend)</div>
       </div>
-
       <div class="about-creator">
         <div class="creator-label">Built by</div>
         <div class="creator-name">Adrian 🇵🇭</div>
@@ -355,32 +297,23 @@
       </div>
     </div>
   </div>
-
 </main>
 
 <script>
   const BACKEND = 'https://tsismis-backend.onrender.com';
   const CARDS_PER_PAGE = 12;
-
-  let allArticles = [];
-  let filteredArticles = [];
-  let currentArticle = null;
-  let sidebarOpen = true;
-  let currentPage = 1;
-  let currentCat = 'all';
-  let searchQuery = '';
+  let allArticles = [], filteredArticles = [], currentArticle = null;
+  let sidebarOpen = true, currentPage = 1, currentCat = 'all', searchQuery = '';
 
   const KEYWORDS = {
-    politics: ['president','senate','congress','election','government','duterte','marcos','comelec','politician','law','bill','supreme court','palace','bongbong','sara','aquino','lacson','senate','house rep','cha-cha','constitution','mayor','governor','ordinance','laglag bala','pogo','pcso','pagcor'],
+    politics: ['president','senate','congress','election','government','duterte','marcos','comelec','politician','law','bill','supreme court','palace','bongbong','sara','aquino','lacson','house rep','cha-cha','constitution','mayor','governor','ordinance','pogo','pcso','pagcor'],
     business: ['economy','peso','stocks','market','business','trade','inflation','bsp','bangko','gdp','imf','world bank','budget','tax','bir','customs','import','export','remittance','ofw','psei','rate','financial','investment','startup'],
-    sports: ['basketball','pba','uaap','sea games','boxing','pacquiao','football','sports','nba','fiba','gilas','azkals','volleyball','athletics','swimming','badminton','tennis','chess','esports','fifa','leagues','finals','championship','tournament','gold medal','coach','team'],
+    sports: ['basketball','pba','uaap','sea games','boxing','pacquiao','football','sports','nba','fiba','gilas','azkals','volleyball','athletics','swimming','badminton','tennis','chess','esports','fifa','finals','championship','tournament','gold medal','coach','team'],
     tech: ['technology','tech','ai','artificial intelligence','app','software','hardware','phone','smartphone','internet','5g','cybersecurity','hack','data','digital','startup','innovation','robot','electric vehicle','crypto','blockchain','meta','google','apple','microsoft','samsung','social media','tiktok','facebook','youtube'],
     celebs: ['actor','actress','celebrity','showbiz','concert','award','star','opm','kpop','drama','teleserye','movie','film','kapamilya','kapuso','abs-cbn','gma','tv','entertainment','singer','dancer','artist','noontime','kris','vice','maine','alden','kathryn','daniel','liza','enrique','anne','nico','andrea','bb pilipinas','miss universe','artista']
   };
 
-  document.getElementById('date-tag').textContent = new Date().toLocaleDateString('en-PH', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
+  document.getElementById('date-tag').textContent = new Date().toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
   async function loadNews() {
     try {
@@ -389,42 +322,26 @@
       allArticles = data.articles;
       applyFilters();
     } catch (err) {
-      document.getElementById('loading-msg').innerHTML = `
-        <div style="font-size:40px;margin-bottom:16px">😵</div>
-        <div style="color:#fff;margin-bottom:8px">Hindi ma-load ang news.</div>
-        <div style="font-size:13px;color:#666">Backend might be waking up. Refresh in 30 seconds.</div>`;
+      document.getElementById('loading-msg').innerHTML = `<div style="font-size:40px;margin-bottom:16px">😵</div><div style="color:#fff;margin-bottom:8px">Hindi ma-load ang news.</div><div style="font-size:13px;color:#666">Backend might be waking up. Refresh in 30 seconds.</div>`;
     }
   }
 
   function applyFilters() {
     let result = [...allArticles];
-
-    // Category filter
-    if (currentCat === 'latest') {
-      result = result.slice(0, 30);
-    } else if (currentCat === 'trending') {
-      // Pick articles with image + longer titles (proxy for "important")
-      result = result.filter(a => a.urlToImage).slice(0, 30);
-    } else if (currentCat === 'random') {
-      result = [...allArticles].sort(() => Math.random() - 0.5).slice(0, 20);
-    } else if (currentCat !== 'all' && KEYWORDS[currentCat]) {
+    if (currentCat === 'latest') result = result.slice(0, 30);
+    else if (currentCat === 'trending') result = result.filter(a => a.urlToImage).slice(0, 30);
+    else if (currentCat === 'random') result = [...allArticles].sort(() => Math.random() - 0.5).slice(0, 20);
+    else if (currentCat !== 'all' && KEYWORDS[currentCat]) {
       const words = KEYWORDS[currentCat];
       result = result.filter(a => {
         const text = (a.title + ' ' + (a.description || '') + ' ' + (a.source?.name || '')).toLowerCase();
         return words.some(w => text.includes(w));
       });
     }
-
-    // Search filter on top
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(a =>
-        a.title.toLowerCase().includes(q) ||
-        (a.description || '').toLowerCase().includes(q) ||
-        (a.source?.name || '').toLowerCase().includes(q)
-      );
+      result = result.filter(a => a.title.toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.source?.name || '').toLowerCase().includes(q));
     }
-
     filteredArticles = result;
     currentPage = 1;
     renderPage();
@@ -433,43 +350,27 @@
   function renderPage() {
     const grid = document.getElementById('news-grid');
     document.getElementById('loading-msg').style.display = 'none';
-
     if (!filteredArticles.length) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-        <div>🔍</div>
-        <div style="color:#fff;margin-bottom:8px">Walang results.</div>
-        <div style="font-size:13px">Try ibang category o search term.</div>
-      </div>`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div>🔍</div><div style="color:#fff;margin-bottom:8px">Walang results.</div><div style="font-size:13px">Try ibang category o search term.</div></div>`;
       document.getElementById('pagination').innerHTML = '';
       return;
     }
-
     const start = (currentPage - 1) * CARDS_PER_PAGE;
-    const pageArticles = filteredArticles.slice(start, start + CARDS_PER_PAGE);
-
-    grid.innerHTML = pageArticles.map((a, i) => {
+    grid.innerHTML = filteredArticles.slice(start, start + CARDS_PER_PAGE).map(a => {
       const realIndex = allArticles.indexOf(a);
-      return `
-        <div class="card" onclick="openArticle(${realIndex})">
-          ${a.urlToImage
-            ? `<img class="card-img" src="${a.urlToImage}" alt="" loading="lazy" onerror="this.outerHTML='<div class=card-img-placeholder>🇵🇭</div>'">`
-            : `<div class="card-img-placeholder">🇵🇭</div>`}
-          <div class="card-body">
-            <div class="card-source">${a.source?.name || 'Unknown'}</div>
-            <div class="card-title">${a.title}</div>
-            ${a.description ? `<div class="card-desc">${a.description}</div>` : ''}
-          </div>
-          <div class="card-footer">
-            <span class="card-time">${timeAgo(a.publishedAt)}</span>
-            <div class="card-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </div>
-          </div>
-        </div>`;
+      return `<div class="card" onclick="openArticle(${realIndex})">
+        ${a.urlToImage ? `<img class="card-img" src="${a.urlToImage}" alt="" loading="lazy" onerror="this.outerHTML='<div class=card-img-placeholder>🇵🇭</div>'">` : `<div class="card-img-placeholder">🇵🇭</div>`}
+        <div class="card-body">
+          <div class="card-source">${a.source?.name || 'Unknown'}</div>
+          <div class="card-title">${a.title}</div>
+          ${a.description ? `<div class="card-desc">${a.description}</div>` : ''}
+        </div>
+        <div class="card-footer">
+          <span class="card-time">${timeAgo(a.publishedAt)}</span>
+          <div class="card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+      </div>`;
     }).join('');
-
     renderPagination();
   }
 
@@ -477,24 +378,12 @@
     const total = Math.ceil(filteredArticles.length / CARDS_PER_PAGE);
     const pag = document.getElementById('pagination');
     if (total <= 1) { pag.innerHTML = ''; return; }
-
-    let html = '';
-
-    // Prev
-    html += `<button class="page-btn arrow" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled style="opacity:0.3"':''}>‹</button>`;
-
-    // Pages
+    let html = `<button class="page-btn arrow" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled style="opacity:0.3"':''}>‹</button>`;
     for (let i = 1; i <= total; i++) {
-      if (i === 1 || i === total || (i >= currentPage-2 && i <= currentPage+2)) {
-        html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-      } else if (i === currentPage-3 || i === currentPage+3) {
-        html += `<span style="color:var(--muted);padding:0 4px">…</span>`;
-      }
+      if (i === 1 || i === total || (i >= currentPage-2 && i <= currentPage+2)) html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      else if (i === currentPage-3 || i === currentPage+3) html += `<span style="color:var(--muted);padding:0 4px">…</span>`;
     }
-
-    // Next
     html += `<button class="page-btn arrow" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled style="opacity:0.3"':''}>›</button>`;
-
     pag.innerHTML = html;
   }
 
@@ -539,14 +428,10 @@
     currentArticle = allArticles[index];
     const a = currentArticle;
     document.getElementById('page-article').innerHTML = `
-      ${a.urlToImage
-        ? `<img class="article-hero" src="${a.urlToImage}" alt="" onerror="this.outerHTML='<div class=article-hero-placeholder>🇵🇭</div>'">`
-        : `<div class="article-hero-placeholder">🇵🇭</div>`}
+      ${a.urlToImage ? `<img class="article-hero" src="${a.urlToImage}" alt="" onerror="this.outerHTML='<div class=article-hero-placeholder>🇵🇭</div>'">` : `<div class="article-hero-placeholder">🇵🇭</div>`}
       <div class="article-content">
         <div class="article-back" onclick="showPage('home')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-          </svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           Back to Home
         </div>
         <div class="article-source">${a.source?.name || ''}</div>
@@ -555,26 +440,16 @@
         ${a.description ? `<div class="article-desc">${a.description}</div>` : ''}
         <div class="ai-box">
           <div class="ai-box-header"><span class="ai-tag">✨ AI Summary</span></div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">
-            Hindi mo kailangang basahin lahat. I-click mo lang at ipapaliwanag sa simpleng Taglish.
-          </p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">Hindi mo kailangang basahin lahat. I-click mo lang at ipapaliwanag sa simpleng Taglish.</p>
           <button id="summarize-btn" onclick="getSummary()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-            </svg>
-            I-explain mo sa akin 
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            I-explain mo sa akin
           </button>
-          <div class="summary-loading" id="summary-loading">
-            <div class="spinner" style="width:20px;height:20px;border-width:2px"></div>
-            Inaaral ni AI ang balita...
-          </div>
+          <div class="summary-loading" id="summary-loading"><div class="spinner" style="width:20px;height:20px;border-width:2px"></div>Inaaral ni AI ang balita...</div>
           <div id="summary-text"></div>
         </div>
         <a class="article-link" href="${a.url}" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Basahin ang buong article
         </a>
       </div>`;
@@ -625,10 +500,15 @@
       sidebarOpen = false;
     } else {
       sidebar.classList.remove('closed'); btn.classList.add('sidebar-open');
-      main.classList.remove('expanded');
-      if (window.innerWidth <= 768) overlay.classList.add('visible');
+      main.classList.remove('expanded'); overlay.classList.add('visible');
       sidebarOpen = true;
     }
+  }
+
+  // On mobile, start with sidebar closed
+  if (window.innerWidth <= 768) {
+    sidebarOpen = true;
+    toggleSidebar(false);
   }
 
   function timeAgo(dateStr) {
@@ -642,3 +522,4 @@
 </script>
 </body>
 </html>
+
