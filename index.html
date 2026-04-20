@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tsismis 🇵🇭</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080808; --surface: #111111; --surface2: #1a1a1a;
+      --border: #222222; --gold: #FFD700; --red: #DC143C;
+      --text: #f0f0f0; --muted: #666666; --sidebar-width: 260px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* SIDEBAR */
+    #sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; height: 100vh; display: flex; flex-direction: column; z-index: 100; transform: translateX(0); transition: transform 0.3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
+    #sidebar.closed { transform: translateX(calc(-1 * var(--sidebar-width))); }
+    .sidebar-header { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
+    .logo-icon { width: 42px; height: 42px; flex-shrink: 0; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; background: linear-gradient(135deg, var(--gold), #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-sub { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+    nav { padding: 20px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+    .nav-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 0 12px; margin: 12px 0 8px; font-family: 'Space Mono', monospace; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; cursor: pointer; transition: all 0.2s; color: var(--muted); font-weight: 500; font-size: 15px; border: 1px solid transparent; }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,107,53,0.08)); color: var(--gold); border-color: rgba(255,215,0,0.15); }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .sidebar-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
+    .live-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .live-dot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)} }
+
+    /* TOGGLE */
+    #toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 200; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; color: var(--text); }
+    #toggle-btn:hover { background: var(--surface2); border-color: var(--gold); color: var(--gold); }
+    #toggle-btn.sidebar-open { left: calc(var(--sidebar-width) + 16px); }
+
+    /* MAIN */
+    #main { flex: 1; margin-left: var(--sidebar-width); transition: margin-left 0.3s cubic-bezier(.4,0,.2,1); min-height: 100vh; }
+    #main.expanded { margin-left: 0; }
+    .page { display: none; } .page.active { display: block; }
+
+    /* TOPBAR */
+    .topbar { padding: 80px 40px 0; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+    .page-title span { background: linear-gradient(135deg, var(--gold), #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .date-tag { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); padding: 6px 12px; background: var(--surface); border-radius: 20px; border: 1px solid var(--border); }
+
+    /* SEARCH */
+    .search-wrap { padding: 20px 40px 0; }
+    .search-box { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; transition: border-color 0.2s; }
+    .search-box:focus-within { border-color: var(--gold); }
+    .search-box svg { color: var(--muted); flex-shrink: 0; }
+    .search-box input { background: transparent; border: none; outline: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; flex: 1; }
+    .search-box input::placeholder { color: var(--muted); }
+    #search-clear { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; display: none; padding: 0; }
+    #search-clear.visible { display: block; }
+
+    /* CATEGORIES */
+    .categories { display: flex; gap: 8px; padding: 16px 40px 0; flex-wrap: wrap; }
+    .cat-btn { padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .cat-btn:hover { color: var(--text); border-color: #444; }
+    .cat-btn.active { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 600; }
+
+    /* NEWS GRID */
+    #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 24px 40px 20px; }
+    .card { background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; }
+    .card:hover { transform: translateY(-4px); border-color: rgba(255,215,0,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .card-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .card-img-placeholder { width: 100%; height: 180px; background: linear-gradient(135deg, #1a1a1a, #222); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    .card-body { padding: 18px; }
+    .card-source { font-size: 11px; color: var(--gold); font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; line-height: 1.4; color: var(--text); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-desc { font-size: 13px; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-time { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .card-arrow { width: 28px; height: 28px; background: var(--surface2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.2s; }
+    .card:hover .card-arrow { background: var(--gold); color: #000; }
+
+    /* PAGINATION */
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 20px 40px 40px; flex-wrap: wrap; }
+    .page-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-family: 'Space Mono', monospace; font-size: 13px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .page-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .page-btn.active { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 700; }
+    .page-btn.arrow { font-size: 16px; }
+
+    /* LOADING */
+    #loading-msg { text-align: center; padding: 80px 40px; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ARTICLE */
+    .article-hero { width: 100%; height: 340px; object-fit: cover; display: block; }
+    .article-hero-placeholder { width: 100%; height: 340px; background: linear-gradient(135deg, #1a1a1a, #222); display: flex; align-items: center; justify-content: center; font-size: 80px; }
+    .article-content { padding: 40px 40px 60px; max-width: 760px; }
+    .article-back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; cursor: pointer; margin-bottom: 28px; transition: color 0.2s; font-family: 'Space Mono', monospace; }
+    .article-back:hover { color: var(--gold); }
+    .article-source { font-size: 12px; color: var(--gold); font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+    .article-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 900; line-height: 1.25; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .article-meta { font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace; margin-bottom: 28px; }
+    .article-desc { font-size: 17px; color: #ccc; line-height: 1.7; margin-bottom: 32px; border-left: 3px solid var(--gold); padding-left: 20px; }
+    .ai-box { background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,107,53,0.03)); border: 1px solid rgba(255,215,0,0.2); border-radius: 16px; padding: 28px; margin-bottom: 32px; }
+    .ai-box-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .ai-tag { font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: rgba(255,215,0,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,215,0,0.2); }
+    #summarize-btn { display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--gold), #ff6b35); color: #000; border: none; border-radius: 12px; padding: 14px 24px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center; }
+    #summarize-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,215,0,0.3); }
+    #summarize-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    #summary-text { font-size: 15px; line-height: 1.8; color: #ddd; display: none; margin-top: 16px; }
+    #summary-text.visible { display: block; }
+    .summary-loading { display: none; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin-top: 16px; font-family: 'Space Mono', monospace; }
+    .summary-loading.visible { display: flex; }
+    .article-link { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; border: 1px solid var(--border); border-radius: 12px; color: var(--text); text-decoration: none; font-weight: 500; font-size: 15px; transition: all 0.2s; }
+    .article-link:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ABOUT */
+    .about-wrap { max-width: 720px; padding: 80px 40px 60px; }
+    .about-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); border-radius: 20px; font-size: 12px; color: var(--gold); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 28px; }
+    .about-title { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 24px; }
+    .about-title em { background: linear-gradient(135deg, var(--gold), var(--red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: normal; }
+    .about-body { font-size: 16px; line-height: 1.8; color: #aaa; margin-bottom: 20px; }
+    .about-body strong { color: var(--text); }
+    .about-divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+    .about-section-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+    .sources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 40px; }
+    .source-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .source-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .source-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .about-stack { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+    .stack-pill { padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); }
+    .about-creator { padding: 28px; background: var(--surface); border-radius: 16px; border: 1px solid var(--border); }
+    .creator-label { font-size: 11px; font-family: 'Space Mono', monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .creator-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .creator-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* OVERLAY */
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 60px 40px; color: var(--muted); }
+    .empty-state div:first-child { font-size: 48px; margin-bottom: 16px; }
+
+    @media (max-width: 768px) {
+      #main { margin-left: 0 !important; }
+      #toggle-btn { left: 16px !important; }
+      #toggle-btn.sidebar-open { left: calc(var(--sidebar-width) + 10px) !important; }
+      .topbar, .search-wrap, .categories, #news-grid, .article-content, .about-wrap, .pagination { padding-left: 16px; padding-right: 16px; }
+      .page-title { font-size: 28px; }
+      #news-grid { grid-template-columns: 1fr; }
+      .article-title { font-size: 24px; }
+      .about-title { font-size: 32px; }
+      #overlay { display: block; pointer-events: none; }
+      #overlay.visible { pointer-events: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <svg class="logo-icon" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="42" height="42" rx="12" fill="url(#logoGrad)"/>
+      <text x="21" y="30" text-anchor="middle" font-family="Georgia,serif" font-size="24" font-weight="900" fill="#000">T</text>
+      <defs>
+        <linearGradient id="logoGrad" x1="0" y1="0" x2="42" y2="42">
+          <stop offset="0%" stop-color="#FFD700"/>
+          <stop offset="100%" stop-color="#ff6b35"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div>
+      <div class="logo-text">Tsismis</div>
+      <div class="logo-sub">PH News</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-label">Navigate</div>
+    <div class="nav-item active" onclick="showPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Home
+    </div>
+    <div class="nav-item" onclick="showPage('about')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      About
+    </div>
+    <div class="nav-label" style="margin-top:16px">Categories</div>
+    <div class="nav-item" onclick="setNavCat(this,'latest')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Latest
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'trending')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      Trending
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'politics')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      Pulitika
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'business')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Negosyo
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'sports')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+      Sports
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'tech')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Tech
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'celebs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Celebs
+    </div>
+    <div class="nav-item" onclick="setNavCat(this,'random')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+      Random
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="live-badge"><div class="live-dot"></div>Live news feed</div>
+  </div>
+</aside>
+
+<button id="toggle-btn" class="sidebar-open" onclick="toggleSidebar()">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+</button>
+
+<div id="overlay" onclick="toggleSidebar()"></div>
+
+<main id="main">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Ano ang <span>Tsismis?</span></div>
+        <div style="color:var(--muted);margin-top:8px;font-size:14px">Latest happenings sa Pilipinas 🇵🇭</div>
+      </div>
+      <div class="date-tag" id="date-tag"></div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Maghanap ng balita..." oninput="handleSearch(this.value)"/>
+        <button id="search-clear" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+
+    <div class="categories">
+      <button class="cat-btn active" onclick="filterCat(this,'all')">📈 Lahat</button>
+      <button class="cat-btn" onclick="filterCat(this,'latest')">🕐 Latest</button>
+      <button class="cat-btn" onclick="filterCat(this,'trending')">🔥 Trending</button>
+      <button class="cat-btn" onclick="filterCat(this,'politics')">🏛️ Pulitika</button>
+      <button class="cat-btn" onclick="filterCat(this,'business')">💰 Negosyo</button>
+      <button class="cat-btn" onclick="filterCat(this,'sports')">⚽ Sports</button>
+      <button class="cat-btn" onclick="filterCat(this,'tech')">💻 Tech</button>
+      <button class="cat-btn" onclick="filterCat(this,'celebs')">⭐ Celebs</button>
+      <button class="cat-btn" onclick="filterCat(this,'random')">🎲 Random</button>
+    </div>
+
+    <div id="loading-msg"><div class="spinner"></div>Hintay muna, naglo-load ang news...</div>
+    <div id="news-grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- ARTICLE PAGE -->
+  <div id="page-article" class="page"></div>
+
+  <!-- ABOUT PAGE -->
+  <div id="page-about" class="page">
+    <div class="about-wrap">
+      <div class="about-badge">🇵🇭 Made in the Philippines</div>
+      <div class="about-title">Balita na <em>gets mo</em> talaga.</div>
+      <p class="about-body">
+       <strong>Tsismis</strong> gets the latest Philippine news from trusted local sources 
+        and uses AI to break it down in simple Taglish — so you actually understand 
+        what's happening in your own country without feeling overwhelmed.
+      </p>
+      <p class="about-body">
+        Kasi let's be  <strong>real</strong> — a lot of Filipino news is either too formal, too biased, 
+        or just straight up mahirap intindihin. Tsismis fixes that. Every article comes 
+        with an AI summary that explains the story — casual, 
+        clear, and actually helpful
+      </p>
+      <p class="about-body">
+        Hindi ko pinapalitan ang tunay na journalism. 
+        Ginagawa ito upang mas maipadali para sa mga mamayang pilipino na mag-alala sa kung ano ang 
+         <strong>nangyayari sa ating bansa.</strong>
+      </p>
+
+      <hr class="about-divider"/>
+
+      <div class="about-section-title">Saan galing ang news? 📰</div>
+      <div class="sources-grid">
+        <div class="source-card">
+          <div class="source-name">Rappler</div>
+          <div class="source-desc">Investigative at breaking news</div>
+        </div>
+        <div class="source-card">
+          <div class="source-name">Inquirer</div>
+          <div class="source-desc">General news, sports, business, tech</div>
+        </div>
+        <div class="source-card">
+          <div class="source-name">PhilStar</div>
+          <div class="source-desc">Headlines, entertainment, sports</div>
+        </div>
+        <div class="source-card">
+          <div class="source-name">GMA News</div>
+          <div class="source-desc">Breaking news at entertainment</div>
+        </div>
+        <div class="source-card">
+          <div class="source-name">Manila Bulletin</div>
+          <div class="source-desc">National at regional news</div>
+        </div>
+        <div class="source-card">
+          <div class="source-name">BusinessWorld</div>
+          <div class="source-desc">Business at economy</div>
+        </div>
+      </div>
+
+      <hr class="about-divider"/>
+
+      <div class="about-section-title">Tech stack 🛠️</div>
+      <div class="about-stack">
+        <div class="stack-pill">HTML / CSS / JS</div>
+        <div class="stack-pill">RSS Feeds</div>
+        <div class="stack-pill">Groq AI (Llama 3)</div>
+        <div class="stack-pill">Node.js + Express</div>
+        <div class="stack-pill">Render (Backend)</div>
+        <div class="stack-pill">Vercel (Frontend)</div>
+      </div>
+
+      <div class="about-creator">
+        <div class="creator-label">Built by</div>
+        <div class="creator-name">Adrian 🇵🇭</div>
+        <div class="creator-desc">
+          17 y/o developer from the Philippines. Still learning, still building.
+          Tsismis started as a side project during vacation — now it's something
+          I'm actually proud of. Maraming salamat sa lahat ng nagbabasa. 🙏
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const BACKEND = 'https://tsismis-backend.onrender.com';
+  const CARDS_PER_PAGE = 12;
+
+  let allArticles = [];
+  let filteredArticles = [];
+  let currentArticle = null;
+  let sidebarOpen = true;
+  let currentPage = 1;
+  let currentCat = 'all';
+  let searchQuery = '';
+
+  const KEYWORDS = {
+    politics: ['president','senate','congress','election','government','duterte','marcos','comelec','politician','law','bill','supreme court','palace','bongbong','sara','aquino','lacson','senate','house rep','cha-cha','constitution','mayor','governor','ordinance','laglag bala','pogo','pcso','pagcor'],
+    business: ['economy','peso','stocks','market','business','trade','inflation','bsp','bangko','gdp','imf','world bank','budget','tax','bir','customs','import','export','remittance','ofw','psei','rate','financial','investment','startup'],
+    sports: ['basketball','pba','uaap','sea games','boxing','pacquiao','football','sports','nba','fiba','gilas','azkals','volleyball','athletics','swimming','badminton','tennis','chess','esports','fifa','leagues','finals','championship','tournament','gold medal','coach','team'],
+    tech: ['technology','tech','ai','artificial intelligence','app','software','hardware','phone','smartphone','internet','5g','cybersecurity','hack','data','digital','startup','innovation','robot','electric vehicle','crypto','blockchain','meta','google','apple','microsoft','samsung','social media','tiktok','facebook','youtube'],
+    celebs: ['actor','actress','celebrity','showbiz','concert','award','star','opm','kpop','drama','teleserye','movie','film','kapamilya','kapuso','abs-cbn','gma','tv','entertainment','singer','dancer','artist','noontime','kris','vice','maine','alden','kathryn','daniel','liza','enrique','anne','nico','andrea','bb pilipinas','miss universe','artista']
+  };
+
+  document.getElementById('date-tag').textContent = new Date().toLocaleDateString('en-PH', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  async function loadNews() {
+    try {
+      const res = await fetch(`${BACKEND}/news`);
+      const data = await res.json();
+      allArticles = data.articles;
+      applyFilters();
+    } catch (err) {
+      document.getElementById('loading-msg').innerHTML = `
+        <div style="font-size:40px;margin-bottom:16px">😵</div>
+        <div style="color:#fff;margin-bottom:8px">Hindi ma-load ang news.</div>
+        <div style="font-size:13px;color:#666">Backend might be waking up. Refresh in 30 seconds.</div>`;
+    }
+  }
+
+  function applyFilters() {
+    let result = [...allArticles];
+
+    // Category filter
+    if (currentCat === 'latest') {
+      result = result.slice(0, 30);
+    } else if (currentCat === 'trending') {
+      // Pick articles with image + longer titles (proxy for "important")
+      result = result.filter(a => a.urlToImage).slice(0, 30);
+    } else if (currentCat === 'random') {
+      result = [...allArticles].sort(() => Math.random() - 0.5).slice(0, 20);
+    } else if (currentCat !== 'all' && KEYWORDS[currentCat]) {
+      const words = KEYWORDS[currentCat];
+      result = result.filter(a => {
+        const text = (a.title + ' ' + (a.description || '') + ' ' + (a.source?.name || '')).toLowerCase();
+        return words.some(w => text.includes(w));
+      });
+    }
+
+    // Search filter on top
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(a =>
+        a.title.toLowerCase().includes(q) ||
+        (a.description || '').toLowerCase().includes(q) ||
+        (a.source?.name || '').toLowerCase().includes(q)
+      );
+    }
+
+    filteredArticles = result;
+    currentPage = 1;
+    renderPage();
+  }
+
+  function renderPage() {
+    const grid = document.getElementById('news-grid');
+    document.getElementById('loading-msg').style.display = 'none';
+
+    if (!filteredArticles.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <div>🔍</div>
+        <div style="color:#fff;margin-bottom:8px">Walang results.</div>
+        <div style="font-size:13px">Try ibang category o search term.</div>
+      </div>`;
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    const start = (currentPage - 1) * CARDS_PER_PAGE;
+    const pageArticles = filteredArticles.slice(start, start + CARDS_PER_PAGE);
+
+    grid.innerHTML = pageArticles.map((a, i) => {
+      const realIndex = allArticles.indexOf(a);
+      return `
+        <div class="card" onclick="openArticle(${realIndex})">
+          ${a.urlToImage
+            ? `<img class="card-img" src="${a.urlToImage}" alt="" loading="lazy" onerror="this.outerHTML='<div class=card-img-placeholder>🇵🇭</div>'">`
+            : `<div class="card-img-placeholder">🇵🇭</div>`}
+          <div class="card-body">
+            <div class="card-source">${a.source?.name || 'Unknown'}</div>
+            <div class="card-title">${a.title}</div>
+            ${a.description ? `<div class="card-desc">${a.description}</div>` : ''}
+          </div>
+          <div class="card-footer">
+            <span class="card-time">${timeAgo(a.publishedAt)}</span>
+            <div class="card-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    const total = Math.ceil(filteredArticles.length / CARDS_PER_PAGE);
+    const pag = document.getElementById('pagination');
+    if (total <= 1) { pag.innerHTML = ''; return; }
+
+    let html = '';
+
+    // Prev
+    html += `<button class="page-btn arrow" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled style="opacity:0.3"':''}>‹</button>`;
+
+    // Pages
+    for (let i = 1; i <= total; i++) {
+      if (i === 1 || i === total || (i >= currentPage-2 && i <= currentPage+2)) {
+        html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      } else if (i === currentPage-3 || i === currentPage+3) {
+        html += `<span style="color:var(--muted);padding:0 4px">…</span>`;
+      }
+    }
+
+    // Next
+    html += `<button class="page-btn arrow" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled style="opacity:0.3"':''}>›</button>`;
+
+    pag.innerHTML = html;
+  }
+
+  function goPage(n) {
+    const total = Math.ceil(filteredArticles.length / CARDS_PER_PAGE);
+    if (n < 1 || n > total) return;
+    currentPage = n;
+    renderPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function filterCat(btn, cat) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = cat;
+    applyFilters();
+  }
+
+  function setNavCat(navItem, cat) {
+    showPage('home');
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent.toLowerCase().includes(cat) || (cat==='all' && b.textContent.includes('Lahat')));
+    });
+    applyFilters();
+  }
+
+  function handleSearch(val) {
+    searchQuery = val;
+    document.getElementById('search-clear').classList.toggle('visible', val.length > 0);
+    applyFilters();
+  }
+
+  function clearSearch() {
+    document.getElementById('search-input').value = '';
+    searchQuery = '';
+    document.getElementById('search-clear').classList.remove('visible');
+    applyFilters();
+  }
+
+  function openArticle(index) {
+    currentArticle = allArticles[index];
+    const a = currentArticle;
+    document.getElementById('page-article').innerHTML = `
+      ${a.urlToImage
+        ? `<img class="article-hero" src="${a.urlToImage}" alt="" onerror="this.outerHTML='<div class=article-hero-placeholder>🇵🇭</div>'">`
+        : `<div class="article-hero-placeholder">🇵🇭</div>`}
+      <div class="article-content">
+        <div class="article-back" onclick="showPage('home')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Back to Home
+        </div>
+        <div class="article-source">${a.source?.name || ''}</div>
+        <div class="article-title">${a.title}</div>
+        <div class="article-meta">${new Date(a.publishedAt).toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'})}</div>
+        ${a.description ? `<div class="article-desc">${a.description}</div>` : ''}
+        <div class="ai-box">
+          <div class="ai-box-header"><span class="ai-tag">✨ AI Summary</span></div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+            Hindi mo kailangang basahin lahat. I-click mo lang at ipapaliwanag sa simpleng Taglish.
+          </p>
+          <button id="summarize-btn" onclick="getSummary()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+            </svg>
+            I-explain mo sa akin 
+          </button>
+          <div class="summary-loading" id="summary-loading">
+            <div class="spinner" style="width:20px;height:20px;border-width:2px"></div>
+            Inaaral ni AI ang balita...
+          </div>
+          <div id="summary-text"></div>
+        </div>
+        <a class="article-link" href="${a.url}" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Basahin ang buong article
+        </a>
+      </div>`;
+    showPage('article');
+  }
+
+  async function getSummary() {
+    const btn = document.getElementById('summarize-btn');
+    const loading = document.getElementById('summary-loading');
+    const summaryDiv = document.getElementById('summary-text');
+    const a = currentArticle;
+    btn.disabled = true; btn.style.display = 'none';
+    loading.classList.add('visible');
+    try {
+      const res = await fetch(`${BACKEND}/summarize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: a.title, description: a.description })
+      });
+      const data = await res.json();
+      summaryDiv.innerHTML = '<p>' + data.summary.replace(/\n\n/g, '</p><p style="margin-top:12px">') + '</p>';
+      summaryDiv.classList.add('visible');
+    } catch (err) {
+      summaryDiv.innerHTML = `<div style="color:#ff6b6b;font-size:13px">Hindi ma-load ang summary. Try ulit mamaya.</div>`;
+      summaryDiv.classList.add('visible');
+    }
+    loading.classList.remove('visible');
+  }
+
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (name === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+    if (name === 'about') document.querySelectorAll('.nav-item')[1].classList.add('active');
+    window.scrollTo(0, 0);
+    if (window.innerWidth <= 768) toggleSidebar(false);
+  }
+
+  function toggleSidebar(force) {
+    const sidebar = document.getElementById('sidebar');
+    const btn = document.getElementById('toggle-btn');
+    const main = document.getElementById('main');
+    const overlay = document.getElementById('overlay');
+    if (force === false || sidebarOpen) {
+      sidebar.classList.add('closed'); btn.classList.remove('sidebar-open');
+      main.classList.add('expanded'); overlay.classList.remove('visible');
+      sidebarOpen = false;
+    } else {
+      sidebar.classList.remove('closed'); btn.classList.add('sidebar-open');
+      main.classList.remove('expanded');
+      if (window.innerWidth <= 768) overlay.classList.add('visible');
+      sidebarOpen = true;
+    }
+  }
+
+  function timeAgo(dateStr) {
+    const diff = (Date.now() - new Date(dateStr)) / 1000;
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    return Math.floor(diff / 86400) + 'd ago';
+  }
+
+  loadNews();
+</script>
+</body>
+</html>
